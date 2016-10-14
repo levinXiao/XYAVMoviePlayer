@@ -15,6 +15,8 @@
 
 -(void)player:(XYAVMoviePlayer *)player didPlayerTimePass:(double)pass timeTotal:(double)total;
 
+-(void)player:(XYAVMoviePlayer *)player didPlayerDownloadProgressChanged:(float)downloadProgress;
+
 -(void)didPlayerMuteStateChanged:(XYAVMoviePlayer *)player;
 
 @end
@@ -29,9 +31,11 @@
 
 @property (nonatomic ,strong) UIImageView *shortCutImageView;
 
-@property (nonatomic, assign) BOOL mute;
+@property (nonatomic, getter=isMute) BOOL mute;
 
 @property (nonatomic,assign) float currentVolumn;
+
+@property (nonatomic,readonly) BOOL isPlaying;
 
 #pragma mark - control
 // Plays items from the current queue, resuming paused playback if possible.
