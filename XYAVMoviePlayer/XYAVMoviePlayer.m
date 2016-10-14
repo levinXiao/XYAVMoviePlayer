@@ -62,13 +62,13 @@
     self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     [self.mediaPlayerView.layer addSublayer:self.playerLayer];
     
-//    self.unMuteVolumn = [AVAudioSession sharedInstance].outputVolume;
-//    self.currentVolumn = self.unMuteVolumn;
+    //    self.unMuteVolumn = [AVAudioSession sharedInstance].outputVolume;
+    //    self.currentVolumn = self.unMuteVolumn;
     
-//
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMPMoviePlayerPlaybackStateDidChangeNotification:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMPMoviePlayerReadyForDisplayDidChangeNotification:) name:MPMoviePlayerReadyForDisplayDidChangeNotification object:nil];
+    //
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMPMoviePlayerPlaybackStateDidChangeNotification:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:nil];
+    //
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMPMoviePlayerReadyForDisplayDidChangeNotification:) name:MPMoviePlayerReadyForDisplayDidChangeNotification object:nil];
 }
 
 - (void)startDurationTimer {
@@ -91,7 +91,7 @@
     double totalTime = durationTimeCM.value*1000/durationTimeCM.timescale/1000.f;
     
     if (self.playerLayer.player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
-//        NSLog(@"AVPlayerTimeControlStatusPlaying");
+        //        NSLog(@"AVPlayerTimeControlStatusPlaying");
         if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerTimePass:timeTotal:)]) {
             [self.delegate player:self didPlayerTimePass:currentTime timeTotal:totalTime];
         }
@@ -102,7 +102,7 @@
         }
         self.isPalying = YES;
     }else if(self.playerLayer.player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate){
-//        NSLog(@"AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate");
+        //        NSLog(@"AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate");
         //没有收到buffer
         self.isPalying = NO;
         if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
@@ -150,14 +150,12 @@
 
 -(void)changePlayingVolumn:(float)aVolumn{
     if (aVolumn == 0) {
-        _mute = YES;
+        [self setMute:YES];
+        return;
     }else{
-        _mute = NO;
+        [self setMute:NO];
     }
     self.playerLayer.player.volume = aVolumn;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didPlayerMuteStateChanged:)]) {
-        [self.delegate didPlayerMuteStateChanged:self];
-    }
 }
 
 #pragma mark - setter & getter
@@ -169,11 +167,14 @@
 }
 
 - (void)setMute:(BOOL)mute {
-    _mute = mute;
     [self.playerLayer.player setMuted:mute];
     if (self.delegate && [self.delegate respondsToSelector:@selector(didPlayerMuteStateChanged:)]) {
         [self.delegate didPlayerMuteStateChanged:self];
     }
+}
+
+-(BOOL)isMute{
+    return self.playerLayer.player.muted;
 }
 
 -(void)setPlayURL:(NSString *)playURL{
@@ -195,7 +196,7 @@
 }
 
 -(float)currentVolumn{
-    if (self.mute) {
+    if (self.isMute) {
         return 0;
     }
     return self.playerLayer.player.volume;
