@@ -15,6 +15,8 @@
 
 @property (nonatomic,strong) AVPlayerLayer *playerLayer;
 
+@property (nonatomic,assign) BOOL isPalying;
+
 @end
 
 @implementation XYAVMoviePlayer {
@@ -85,27 +87,33 @@
     if (currentTimeCM.timescale == 0 || durationTimeCM.timescale == 0) {
         return;
     }
-    long currentTimeK = currentTimeCM.value*1000/currentTimeCM.timescale;
-    long totalTimeK = durationTimeCM.value*1000/durationTimeCM.timescale;
+    double currentTime = currentTimeCM.value*1000/currentTimeCM.timescale/1000.f;
+    double totalTime = durationTimeCM.value*1000/durationTimeCM.timescale/1000.f;
     
     if (self.playerLayer.player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
 //        NSLog(@"AVPlayerTimeControlStatusPlaying");
-        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerTimePass:timeTotal:)]) {
+            [self.delegate player:self didPlayerTimePass:currentTime timeTotal:totalTime];
+        }
+        if (!self.isPalying) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
+                [self.delegate player:self didPlayerStateChanged:self.isPalying];
+            }
+        }
+        self.isPalying = YES;
     }else if(self.playerLayer.player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate){
 //        NSLog(@"AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate");
         //没有收到buffer
-        
+        self.isPalying = NO;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
+            [self.delegate player:self didPlayerStateChanged:self.isPalying];
+        }
     }else if (self.playerLayer.player.timeControlStatus == AVPlayerTimeControlStatusPaused){
-//        NSLog(@"AVPlayerTimeControlStatusPaused");
+        self.isPalying = NO;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
+            [self.delegate player:self didPlayerStateChanged:self.isPalying];
+        }
     }
-    
-//    if (self.moviePlayerController.playbackState == MPMoviePlaybackStatePlaying ||
-//        self.moviePlayerController.playbackState == MPMoviePlaybackStateSeekingForward ||
-//        self.moviePlayerController.playbackState == MPMoviePlaybackStateSeekingBackward ) {
-//        if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerTimePass:timeTotal:)]) {
-//            [self.delegate player:self didPlayerTimePass:currentTime timeTotal:totalTime];
-//        }
-//    }
 }
 
 #pragma mark - control
@@ -119,6 +127,9 @@
 - (void)pause {
     [self.playerLayer.player pause];
     [self stopDurationTimer];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
+        [self.delegate player:self didPlayerStateChanged:NO];
+    }
 }
 
 // Ends playback. Calling -play again will start from the beginnning of the queue.
@@ -144,6 +155,9 @@
         _mute = NO;
     }
     self.playerLayer.player.volume = aVolumn;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didPlayerMuteStateChanged:)]) {
+        [self.delegate didPlayerMuteStateChanged:self];
+    }
 }
 
 #pragma mark - setter & getter
@@ -157,6 +171,9 @@
 - (void)setMute:(BOOL)mute {
     _mute = mute;
     [self.playerLayer.player setMuted:mute];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didPlayerMuteStateChanged:)]) {
+        [self.delegate didPlayerMuteStateChanged:self];
+    }
 }
 
 -(void)setPlayURL:(NSString *)playURL{

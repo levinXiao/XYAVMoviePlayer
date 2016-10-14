@@ -8,13 +8,24 @@
 
 #import <UIKit/UIKit.h>
 
+@class XYAVMoviePlayer;
+@protocol XYAVMoviePlayerDelegate <NSObject>
+@optional
+-(void)player:(XYAVMoviePlayer *)player didPlayerStateChanged:(BOOL)isPlaying;
+
+-(void)player:(XYAVMoviePlayer *)player didPlayerTimePass:(double)pass timeTotal:(double)total;
+
+-(void)didPlayerMuteStateChanged:(XYAVMoviePlayer *)player;
+
+@end
+
 @interface XYAVMoviePlayer : UIView
 
 @property (nonatomic, copy) NSString *playURL;
 
 @property (nonatomic, strong) UIView *mediaPlayerView;
 
-//@property (nonatomic, weak) id<XYSimpleMoviePlayerDelegate> delegate;
+@property (nonatomic, weak) id<XYAVMoviePlayerDelegate> delegate;
 
 @property (nonatomic ,strong) UIImageView *shortCutImageView;
 
