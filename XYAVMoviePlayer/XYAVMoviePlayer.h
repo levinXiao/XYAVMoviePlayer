@@ -11,6 +11,10 @@
 @class XYAVMoviePlayer;
 @protocol XYAVMoviePlayerDelegate <NSObject>
 @optional
+-(NSString *)fileNameForPlayerCompleteCache:(XYAVMoviePlayer *)player;
+
+-(NSString *)filePathExtensionForPlayerCompleteCache:(XYAVMoviePlayer *)player;
+
 -(void)player:(XYAVMoviePlayer *)player didPlayerStateChanged:(BOOL)isPlaying;
 
 -(void)player:(XYAVMoviePlayer *)player didPlayerTimePass:(double)pass timeTotal:(double)total;
@@ -33,9 +37,13 @@
 
 @property (nonatomic, getter=isMute) BOOL mute;
 
-@property (nonatomic,assign) float currentVolumn;
+@property (nonatomic, assign) float currentVolumn;
 
-@property (nonatomic,readonly) BOOL isPlaying;
+@property (nonatomic, readonly) BOOL isPlaying;
+
+@property (nonatomic, copy) NSString *currentMIMEType;
+
+@property (nonatomic, assign,getter=isCacheEnable) BOOL cacheEnable;
 
 #pragma mark - control
 // Plays items from the current queue, resuming paused playback if possible.
@@ -50,3 +58,5 @@
 -(void)jumpToTime:(float)time;
 
 @end
+
+

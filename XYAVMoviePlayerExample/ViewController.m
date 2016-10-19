@@ -10,76 +10,134 @@
 #import "XYAVMoviePlayer.h"
 
 
-@interface ViewController ()
+@interface ViewController () <XYAVMoviePlayerDelegate>
 
 @end
 
 @implementation ViewController {
     XYAVMoviePlayer *avMoviePlayer;
+    
+    UISlider *playerDownloadGrogressSlider;
+    UISlider *playerGrogressSlider;
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     //http://krtv.qiniudn.com/150522nextapp
-    
-
-//    UIImageView *iamgeView = [[UIImageView alloc] init];
-//    iamgeView.frame = (CGRect){0,0,self.view.frame.size.width,300};
-//    iamgeView.backgroundColor = [UIColor redColor];
-//    [self.view addSubview:iamgeView];
-//    
-//    NSURL *sourceMovieURL = [NSURL URLWithString:@"http://krtv.qiniudn.com/150522nextapp"];
-//
-//    //    http://7xrlqi.com1.z0.glb.clouddn.com/150522nextapp
-//    
-//    AVAsset *movieAsset = [AVURLAsset URLAssetWithURL:sourceMovieURL options:nil];
-//    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:movieAsset];
-//    
-//    AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-//    
-//    playerLayer = [AVPlayerLayer playerLayerWithPlayer:player];
-//    playerLayer.frame = iamgeView.layer.bounds;
-//    playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-//    [iamgeView.layer addSublayer:playerLayer];
-//    [player play];
-//    
+    //
     UIButton *switchButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [switchButton setTitle:@"切换源" forState:UIControlStateNormal];
+    [switchButton setTitle:@"暂停/播放" forState:UIControlStateNormal];
     [switchButton setTintColor:[UIColor blueColor]];
     [switchButton addTarget:self action:@selector(switchButtonClick) forControlEvents:UIControlEventTouchUpInside];
     switchButton.frame = (CGRect){0,self.view.frame.size.height-100,80,50};
     [self.view addSubview:switchButton];
     
     avMoviePlayer = [[XYAVMoviePlayer alloc] init];
-    avMoviePlayer.frame = (CGRect){0,0,self.view.frame.size.width,300};
+    avMoviePlayer.frame = (CGRect){0,50,self.view.frame.size.width,300};
+    avMoviePlayer.delegate = self;
     [self.view addSubview:avMoviePlayer];
-//    avMoviePlayer.currentVolumn = 0;
+    avMoviePlayer.cacheEnable = YES;
+    //local file PLAY
+    //    NSString *localPath = [[NSBundle mainBundle] pathForResource:@"nextsmall" ofType:@"mp4"];
+    //    avMoviePlayer.playURL = localPath;
     
-    avMoviePlayer.playURL = @"http://krtv.qiniudn.com/150522nextapp";
+    //playurl with extention
+    //    avMoviePlayer.playURL = @"http://o7b4rtbje.bkt.clouddn.com/Sia-Chandelier%28Official%20Video%29.mp4";
+    
+    //playurl without extention
+    //    avMoviePlayer.playURL = @"http://krtv.qiniudn.com/150522nextapp";
+    
+    avMoviePlayer.playURL = @"http://o7b4rtbje.bkt.clouddn.com/Sia-Chandelier%28Official%20Video%29.mp4";
     [avMoviePlayer play];
+    avMoviePlayer.currentVolumn = 1;
+    
+    playerDownloadGrogressSlider = [[UISlider alloc] init];
+    playerDownloadGrogressSlider.frame = (CGRect){15,400,self.view.frame.size.width-30,50};
+    playerDownloadGrogressSlider.minimumValue = 0;
+    playerDownloadGrogressSlider.maximumValue = 100;
+    playerDownloadGrogressSlider.maximumTrackTintColor = [UIColor darkGrayColor];
+    playerDownloadGrogressSlider.minimumTrackTintColor = [UIColor redColor];
+    [playerDownloadGrogressSlider setThumbImage:[UIImage new] forState:UIControlStateNormal];
+    [playerDownloadGrogressSlider setThumbImage:[UIImage new] forState:UIControlStateSelected];
+    playerDownloadGrogressSlider.userInteractionEnabled = NO;
+    [self.view addSubview:playerDownloadGrogressSlider];
+    
+    playerGrogressSlider = [[UISlider alloc] init];
+    playerGrogressSlider.frame = (CGRect){15,400,self.view.frame.size.width-30,50};
+    playerGrogressSlider.minimumValue = 0;
+    playerGrogressSlider.maximumValue = 100;
+    playerGrogressSlider.continuous = NO;
+    playerGrogressSlider.maximumTrackTintColor = [UIColor clearColor];
+    playerGrogressSlider.minimumTrackTintColor = [UIColor blueColor];
+    [playerGrogressSlider addTarget:self action:@selector(playerGrogressSliderValueChange) forControlEvents:UIControlEventValueChanged];
+    [playerGrogressSlider addTarget:self action:@selector(playerGrogressSliderTouchDown) forControlEvents:UIControlEventTouchDown];
+    [playerGrogressSlider addTarget:self action:@selector(playerGrogressSliderTouchUp) forControlEvents:UIControlEventTouchCancel | UIControlEventTouchUpOutside | UIControlEventTouchUpInside];
+    [self.view addSubview:playerGrogressSlider];
+}
+
+-(void)playerGrogressSliderValueChange{
+    
+}
+
+-(void)playerGrogressSliderTouchDown{
+    
+}
+
+-(void)playerGrogressSliderTouchUp{
+    [avMoviePlayer jumpToTime:playerGrogressSlider.value/1.f/playerGrogressSlider.maximumValue];
 }
 
 -(void)switchButtonClick{
-//    NSURL *sourceMovieURL = [NSURL URLWithString:@"http://7xrlqi.com1.z0.glb.clouddn.com/150522nextapp"];
-//    AVAsset *movieAsset = [AVURLAsset URLAssetWithURL:sourceMovieURL options:nil];
-//    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:movieAsset];
-//    
-//    AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-//    
-//    playerLayer.player = player;
-//    [player play];
-    
-//    avMoviePlayer.playURL = @"http://7xrlqi.com1.z0.glb.clouddn.com/150522nextapp";
-//    [avMoviePlayer play];
-    avMoviePlayer.mute = !avMoviePlayer.mute;
+    if (avMoviePlayer.isPlaying) {
+        [avMoviePlayer pause];
+    }else{
+        [avMoviePlayer play];
+    }
 }
 
+#pragma mark - XYAVMoviePlayerDelegate
+-(NSString *)fileNameForPlayerCompleteCache:(XYAVMoviePlayer *)player {
+    NSString *cacheFileName = [[NSURL URLWithString:player.playURL] lastPathComponent];
+    NSString *cacheFileExtension = [[NSURL URLWithString:player.playURL] pathExtension];
+
+    if (!cacheFileExtension || [cacheFileExtension isEqualToString:@""]) {
+        cacheFileExtension = @"";
+    }
+    if (cacheFileName) {
+        cacheFileName = [cacheFileName stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@".%@",cacheFileExtension] withString:@""];
+    }
+    return cacheFileName;
+}
+
+-(NSString *)filePathExtensionForPlayerCompleteCache:(XYAVMoviePlayer *)player {
+    NSString *cacheFileExtension = [[NSURL URLWithString:player.playURL] pathExtension];
+    if (!cacheFileExtension || [cacheFileExtension isEqualToString:@""]) {
+        cacheFileExtension = @"mp4";
+    }
+    return cacheFileExtension;
+}
+
+-(void)player:(XYAVMoviePlayer *)player didPlayerStateChanged:(BOOL)isPlaying {
+    
+}
+
+-(void)player:(XYAVMoviePlayer *)player didPlayerTimePass:(double)pass timeTotal:(double)total{
+    playerGrogressSlider.value = (pass *1.f/total)*playerGrogressSlider.maximumValue;
+}
+
+-(void)player:(XYAVMoviePlayer *)player didPlayerDownloadProgressChanged:(float)downloadProgress{
+    playerDownloadGrogressSlider.value = downloadProgress*1.f*playerDownloadGrogressSlider.maximumValue;
+}
+
+-(void)didPlayerMuteStateChanged:(XYAVMoviePlayer *)player{
+    
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 @end

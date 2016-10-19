@@ -13,7 +13,10 @@
 		B80EE3951DB07495002F7DAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3931DB07495002F7DAD /* Main.storyboard */; };
 		B80EE3971DB07495002F7DAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3961DB07495002F7DAD /* Assets.xcassets */; };
 		B80EE39A1DB07495002F7DAD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3981DB07495002F7DAD /* LaunchScreen.storyboard */; };
-		B80EE3A41DB07EEB002F7DAD /* XYAVMoviePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B80EE3A31DB07EEB002F7DAD /* XYAVMoviePlayer.m */; };
+		B81ADF5E1DB75268006B5114 /* XYAVAssetRequestTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF571DB75268006B5114 /* XYAVAssetRequestTask.m */; };
+		B81ADF5F1DB75268006B5114 /* XYAVAssetResourceLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF591DB75268006B5114 /* XYAVAssetResourceLoader.m */; };
+		B81ADF601DB75268006B5114 /* XYAVFileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF5B1DB75268006B5114 /* XYAVFileTool.m */; };
+		B81ADF611DB75268006B5114 /* XYAVMoviePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF5D1DB75268006B5114 /* XYAVMoviePlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,8 +30,14 @@
 		B80EE3961DB07495002F7DAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B80EE3991DB07495002F7DAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B80EE39B1DB07495002F7DAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B80EE3A21DB07EEA002F7DAD /* XYAVMoviePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVMoviePlayer.h; sourceTree = "<group>"; };
-		B80EE3A31DB07EEB002F7DAD /* XYAVMoviePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVMoviePlayer.m; sourceTree = "<group>"; };
+		B81ADF561DB75268006B5114 /* XYAVAssetRequestTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVAssetRequestTask.h; sourceTree = "<group>"; };
+		B81ADF571DB75268006B5114 /* XYAVAssetRequestTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVAssetRequestTask.m; sourceTree = "<group>"; };
+		B81ADF581DB75268006B5114 /* XYAVAssetResourceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVAssetResourceLoader.h; sourceTree = "<group>"; };
+		B81ADF591DB75268006B5114 /* XYAVAssetResourceLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVAssetResourceLoader.m; sourceTree = "<group>"; };
+		B81ADF5A1DB75268006B5114 /* XYAVFileTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVFileTool.h; sourceTree = "<group>"; };
+		B81ADF5B1DB75268006B5114 /* XYAVFileTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVFileTool.m; sourceTree = "<group>"; };
+		B81ADF5C1DB75268006B5114 /* XYAVMoviePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVMoviePlayer.h; sourceTree = "<group>"; };
+		B81ADF5D1DB75268006B5114 /* XYAVMoviePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVMoviePlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,8 +95,14 @@
 		B80EE3A11DB0796C002F7DAD /* XYAVMoviePlayer */ = {
 			isa = PBXGroup;
 			children = (
-				B80EE3A21DB07EEA002F7DAD /* XYAVMoviePlayer.h */,
-				B80EE3A31DB07EEB002F7DAD /* XYAVMoviePlayer.m */,
+				B81ADF561DB75268006B5114 /* XYAVAssetRequestTask.h */,
+				B81ADF571DB75268006B5114 /* XYAVAssetRequestTask.m */,
+				B81ADF581DB75268006B5114 /* XYAVAssetResourceLoader.h */,
+				B81ADF591DB75268006B5114 /* XYAVAssetResourceLoader.m */,
+				B81ADF5A1DB75268006B5114 /* XYAVFileTool.h */,
+				B81ADF5B1DB75268006B5114 /* XYAVFileTool.m */,
+				B81ADF5C1DB75268006B5114 /* XYAVMoviePlayer.h */,
+				B81ADF5D1DB75268006B5114 /* XYAVMoviePlayer.m */,
 			);
 			path = XYAVMoviePlayer;
 			sourceTree = SOURCE_ROOT;
@@ -165,9 +180,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B80EE3921DB07495002F7DAD /* ViewController.m in Sources */,
-				B80EE3A41DB07EEB002F7DAD /* XYAVMoviePlayer.m in Sources */,
+				B81ADF5E1DB75268006B5114 /* XYAVAssetRequestTask.m in Sources */,
+				B81ADF5F1DB75268006B5114 /* XYAVAssetResourceLoader.m in Sources */,
 				B80EE38F1DB07495002F7DAD /* AppDelegate.m in Sources */,
 				B80EE38C1DB07495002F7DAD /* main.m in Sources */,
+				B81ADF611DB75268006B5114 /* XYAVMoviePlayer.m in Sources */,
+				B81ADF601DB75268006B5114 /* XYAVFileTool.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +342,7 @@
 				B80EE3A01DB07495002F7DAD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
