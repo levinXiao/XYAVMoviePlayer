@@ -34,6 +34,10 @@
  */
 + (NSString *)cacheFileExistsWithFileName:(NSString *)fileName pathExtension:(NSString *)pathExtension;
 
++ (BOOL)copyFileAtPath:(NSString *)filePath toPath:(NSString *)destinationPath;
+
++ (BOOL)removeFileAtPath:(NSString *)path;
+
 /**
  *  清空缓存文件
  */

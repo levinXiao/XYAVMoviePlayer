@@ -33,13 +33,13 @@
 
 #pragma mark - AVAssetResourceLoaderDelegate
 - (BOOL)resourceLoader:(AVAssetResourceLoader *)resourceLoader shouldWaitForLoadingOfRequestedResource:(AVAssetResourceLoadingRequest *)loadingRequest {
-    NSLog(@"WaitingLoadingRequest < requestedOffset = %lld, currentOffset = %lld, requestedLength = %ld >", loadingRequest.dataRequest.requestedOffset, loadingRequest.dataRequest.currentOffset, loadingRequest.dataRequest.requestedLength);
+    //    NSLog(@"WaitingLoadingRequest < requestedOffset = %lld, currentOffset = %lld, requestedLength = %ld >", loadingRequest.dataRequest.requestedOffset, loadingRequest.dataRequest.currentOffset, loadingRequest.dataRequest.requestedLength);
     [self addLoadingRequest:loadingRequest];
     return YES;
 }
 
 - (void)resourceLoader:(AVAssetResourceLoader *)resourceLoader didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
-    NSLog(@"CancelLoadingRequest  < requestedOffset = %lld, currentOffset = %lld, requestedLength = %ld >", loadingRequest.dataRequest.requestedOffset, loadingRequest.dataRequest.currentOffset, loadingRequest.dataRequest.requestedLength);
+    //    NSLog(@"CancelLoadingRequest  < requestedOffset = %lld, currentOffset = %lld, requestedLength = %ld >", loadingRequest.dataRequest.requestedOffset, loadingRequest.dataRequest.currentOffset, loadingRequest.dataRequest.requestedLength);
     [self removeLoadingRequest:loadingRequest];
 }
 
@@ -50,8 +50,8 @@
     //因为存在这样一种情况,如果通过滑杆滑动了该视频后发现这个进度会重新从0开始计算,这时候的进度就不准确了
     //所以 当开始进行jumpTime的时候 不能够作为该视频的缓存进度 且如果一旦进行了jumpTime操作该视频就不会缓存到磁盘上
     //所以 该cacheprogress不生效且不准确
-//        CGFloat cacheProgress = (CGFloat)self.requestTask.cacheLength / (self.requestTask.fileLength - self.requestTask.requestOffset);
-//        [self.delegate loader:self cacheProgress:cacheProgress];
+    //        CGFloat cacheProgress = (CGFloat)self.requestTask.cacheLength / (self.requestTask.fileLength - self.requestTask.requestOffset);
+    //        [self.delegate loader:self cacheProgress:cacheProgress];
 }
 
 - (void)requestTaskDidFinishLoadingWithCache:(BOOL)cache {
@@ -138,16 +138,9 @@
     NSUInteger respondLength = MIN(canReadLength, loadingRequest.dataRequest.requestedLength);
     
     long fileOffsetTmp = (long)requestedOffset - (long)self.requestTask.requestOffset;
-//    if (requestedOffset >= self.requestTask.requestOffset) {
     if (fileOffsetTmp >= 0) {
         [loadingRequest.dataRequest respondWithData:[XYAVFileTool readTempFileDataWithOffset:fileOffsetTmp length:respondLength]];
     }
-    
-//    }
-//    else{
-//        NSLog(@"1111");
-//        [loadingRequest.dataRequest respondWithData:[XYAVFileTool readTempFileDataWithOffset:0 length:respondLength]];
-//    }
     //如果完全响应了所需要的数据，则完成
     NSUInteger nowendOffset = requestedOffset + canReadLength;
     NSUInteger reqEndOffset = loadingRequest.dataRequest.requestedOffset + loadingRequest.dataRequest.requestedLength;

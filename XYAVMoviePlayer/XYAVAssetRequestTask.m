@@ -19,8 +19,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        BOOL b = [XYAVFileTool createTempFile];
-        NSLog(@"%d",b);
+        [XYAVFileTool createTempFile];
     }
     return self;
 }

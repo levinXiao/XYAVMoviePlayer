@@ -39,35 +39,59 @@
 }
 
 + (void)cacheTempFileWithFileName:(NSString *)name {
+    if (!name || [name isEqualToString:@""]) {
+        return;
+    }
     NSFileManager * manager = [NSFileManager defaultManager];
     NSString * cacheFolderPath = [self assetCacheFolderPath];
     if (![manager fileExistsAtPath:cacheFolderPath]) {
         [manager createDirectoryAtPath:cacheFolderPath withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    NSString * cacheFilePath = [NSString stringWithFormat:@"%@/%@", cacheFolderPath, name];
-    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:[self assetTempFilePath] toPath:cacheFilePath error:nil];
+    NSString *cacheFilePath = [NSString stringWithFormat:@"%@/%@", cacheFolderPath, name];
+    BOOL success = [self copyFileAtPath:[self assetTempFilePath] toPath:cacheFilePath];
     NSLog(@"cache file : %@", success ? @"success" : @"fail");
 }
 
-//+ (NSString *)cacheFileExistsWithURL:(NSURL *)url {
-//    NSString * cacheFilePath = [NSString stringWithFormat:@"%@/%@", [self assetCacheFolderPath], [self fileNameWithURL:url]];
-//    if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
-//        return cacheFilePath;
-//    }
-//    return nil;
-//}
-
 + (NSString *)cacheFileExistsWithFileName:(NSString *)fileName pathExtension:(NSString *)pathExtension{
+    if (!fileName || [fileName isEqualToString:@""]) {
+        return nil;
+    }
     if (pathExtension) {
         pathExtension = [NSString stringWithFormat:@".%@",pathExtension];
     }else{
         pathExtension = @"";
     }
+    
     NSString * cacheFilePath = [NSString stringWithFormat:@"%@/%@%@", [self assetCacheFolderPath], fileName,pathExtension];
     if ([[NSFileManager defaultManager] fileExistsAtPath:cacheFilePath]) {
         return cacheFilePath;
     }
     return nil;
+}
+
++ (BOOL)copyFileAtPath:(NSString *)filePath toPath:(NSString *)destinationPath {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    BOOL isDirctory;
+    if (![manager fileExistsAtPath:destinationPath isDirectory:&isDirctory]) {
+        if (isDirctory) {
+            [manager createDirectoryAtPath:destinationPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+    }
+    NSError *error;
+    BOOL r = [manager copyItemAtPath:filePath toPath:destinationPath error:&error];
+    NSLog(@"%@",error);
+    return r;
+}
+
++ (BOOL)removeFileAtPath:(NSString *)path{
+    if (!path) {
+        return YES;
+    }
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if (![manager fileExistsAtPath:path]) {
+        return YES;
+    }
+    return [manager removeItemAtPath:path error:nil];
 }
 
 + (BOOL)clearCache {
@@ -82,10 +106,6 @@
 + (NSString *)assetCacheFolderPath {
     return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"movieCaches"];
 }
-
-//+ (NSString *)fileNameWithURL:(NSURL *)url {
-//    return [[url.path componentsSeparatedByString:@"/"] lastObject];
-//}
 
 @end
 

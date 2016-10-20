@@ -8,9 +8,9 @@
 
 #import "ViewController.h"
 #import "XYAVMoviePlayer.h"
+#import "XYAVMovieDownloadManager.h"
 
-
-@interface ViewController () <XYAVMoviePlayerDelegate>
+@interface ViewController () <XYAVMoviePlayerDelegate,XYAVMovieDownloadManagerDelegate>
 
 @end
 
@@ -47,12 +47,12 @@
     //    avMoviePlayer.playURL = @"http://o7b4rtbje.bkt.clouddn.com/Sia-Chandelier.mp4";
     
     //playurl without extention
-    //    avMoviePlayer.playURL = @"http://krtv.qiniudn.com/150522nextapp";
+//        avMoviePlayer.playURL = @"http://krtv.qiniudn.com/150522nextapp";
     
     avMoviePlayer.playURL = @"http://o7b4rtbje.bkt.clouddn.com/Sia-Chandelier.mp4";
     [avMoviePlayer play];
     avMoviePlayer.currentVolumn = 1;
-    
+//    
     playerDownloadGrogressSlider = [[UISlider alloc] init];
     playerDownloadGrogressSlider.frame = (CGRect){15,400,self.view.frame.size.width-30,50};
     playerDownloadGrogressSlider.minimumValue = 0;
@@ -89,29 +89,39 @@
     [avMoviePlayer jumpToTime:playerGrogressSlider.value/1.f/playerGrogressSlider.maximumValue];
 }
 
+NSURLSessionDownloadTask *downloadTask;
 -(void)switchButtonClick{
-    if (avMoviePlayer.isPlaying) {
-        [avMoviePlayer pause];
-    }else{
-        [avMoviePlayer play];
-    }
+//    if (avMoviePlayer.isPlaying) {
+//        [avMoviePlayer pause];
+//    }else{
+//        [avMoviePlayer play];
+//    }
+    XYAVMovieDownloadItem *item = [[XYAVMovieDownloadItem alloc] init];
+    item.identifier = [avMoviePlayer.playURL.lastPathComponent stringByDeletingPathExtension];
+    item.filename = item.identifier;
+    item.filePathExtension = @"mp4";
+    item.downloadUrl = avMoviePlayer.playURL;
+    item.timeStamp = [[NSDate date] timeIntervalSince1970];
+    
+    [XYAVMovieDownloadManager sharedManager].delegate = self;
+    [[XYAVMovieDownloadManager sharedManager] addOrChangeItem:item];
+    
+}
+
+-(void)managerDownloadWrittenBytes:(long long)writtenBytes expectedWrittenBytes:(long long)expectedWrittenBytes {
+    NSLog(@"managerDownloadWrittenBytes  %lld ,%lld %02d%@",writtenBytes,expectedWrittenBytes,(int)(writtenBytes*100.f/expectedWrittenBytes),@"%");
+}
+
+-(void)managerDownloadDidFinishDownloadAtLocation:(NSString *)location {
+    NSLog(@"location %@",location);
 }
 
 #pragma mark - XYAVMoviePlayerDelegate
--(NSString *)fileNameForPlayerCompleteCache:(XYAVMoviePlayer *)player {
-    NSString *cacheFileName = [[NSURL URLWithString:player.playURL] lastPathComponent];
-    NSString *cacheFileExtension = [[NSURL URLWithString:player.playURL] pathExtension];
-
-    if (!cacheFileExtension || [cacheFileExtension isEqualToString:@""]) {
-        cacheFileExtension = @"";
-    }
-    if (cacheFileName) {
-        cacheFileName = [cacheFileName stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@".%@",cacheFileExtension] withString:@""];
-    }
-    return cacheFileName;
+-(NSString *)fileNameWhenPlayerCompleteCache:(XYAVMoviePlayer *)player {
+    return [player.playURL.lastPathComponent stringByDeletingPathExtension];
 }
 
--(NSString *)filePathExtensionForPlayerCompleteCache:(XYAVMoviePlayer *)player {
+-(NSString *)filePathExtensionWhenPlayerCompleteCache:(XYAVMoviePlayer *)player {
     NSString *cacheFileExtension = [[NSURL URLWithString:player.playURL] pathExtension];
     if (!cacheFileExtension || [cacheFileExtension isEqualToString:@""]) {
         cacheFileExtension = @"mp4";

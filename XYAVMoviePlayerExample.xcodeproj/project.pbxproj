@@ -13,6 +13,7 @@
 		B80EE3951DB07495002F7DAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3931DB07495002F7DAD /* Main.storyboard */; };
 		B80EE3971DB07495002F7DAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3961DB07495002F7DAD /* Assets.xcassets */; };
 		B80EE39A1DB07495002F7DAD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B80EE3981DB07495002F7DAD /* LaunchScreen.storyboard */; };
+		B80F0C5E1DB8974600ABBB55 /* XYAVMovieDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B80F0C5D1DB8974600ABBB55 /* XYAVMovieDownloadManager.m */; };
 		B81ADF5E1DB75268006B5114 /* XYAVAssetRequestTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF571DB75268006B5114 /* XYAVAssetRequestTask.m */; };
 		B81ADF5F1DB75268006B5114 /* XYAVAssetResourceLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF591DB75268006B5114 /* XYAVAssetResourceLoader.m */; };
 		B81ADF601DB75268006B5114 /* XYAVFileTool.m in Sources */ = {isa = PBXBuildFile; fileRef = B81ADF5B1DB75268006B5114 /* XYAVFileTool.m */; };
@@ -30,6 +31,8 @@
 		B80EE3961DB07495002F7DAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B80EE3991DB07495002F7DAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B80EE39B1DB07495002F7DAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B80F0C5C1DB8974600ABBB55 /* XYAVMovieDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVMovieDownloadManager.h; sourceTree = "<group>"; };
+		B80F0C5D1DB8974600ABBB55 /* XYAVMovieDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVMovieDownloadManager.m; sourceTree = "<group>"; };
 		B81ADF561DB75268006B5114 /* XYAVAssetRequestTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVAssetRequestTask.h; sourceTree = "<group>"; };
 		B81ADF571DB75268006B5114 /* XYAVAssetRequestTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYAVAssetRequestTask.m; sourceTree = "<group>"; };
 		B81ADF581DB75268006B5114 /* XYAVAssetResourceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYAVAssetResourceLoader.h; sourceTree = "<group>"; };
@@ -75,10 +78,6 @@
 				B80EE38E1DB07495002F7DAD /* AppDelegate.m */,
 				B80EE3901DB07495002F7DAD /* ViewController.h */,
 				B80EE3911DB07495002F7DAD /* ViewController.m */,
-				B80EE3931DB07495002F7DAD /* Main.storyboard */,
-				B80EE3961DB07495002F7DAD /* Assets.xcassets */,
-				B80EE3981DB07495002F7DAD /* LaunchScreen.storyboard */,
-				B80EE39B1DB07495002F7DAD /* Info.plist */,
 				B80EE38A1DB07495002F7DAD /* Supporting Files */,
 			);
 			path = XYAVMoviePlayerExample;
@@ -87,6 +86,10 @@
 		B80EE38A1DB07495002F7DAD /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B80EE3961DB07495002F7DAD /* Assets.xcassets */,
+				B80EE3981DB07495002F7DAD /* LaunchScreen.storyboard */,
+				B80EE39B1DB07495002F7DAD /* Info.plist */,
+				B80EE3931DB07495002F7DAD /* Main.storyboard */,
 				B80EE38B1DB07495002F7DAD /* main.m */,
 			);
 			name = "Supporting Files";
@@ -103,6 +106,8 @@
 				B81ADF5B1DB75268006B5114 /* XYAVFileTool.m */,
 				B81ADF5C1DB75268006B5114 /* XYAVMoviePlayer.h */,
 				B81ADF5D1DB75268006B5114 /* XYAVMoviePlayer.m */,
+				B80F0C5C1DB8974600ABBB55 /* XYAVMovieDownloadManager.h */,
+				B80F0C5D1DB8974600ABBB55 /* XYAVMovieDownloadManager.m */,
 			);
 			path = XYAVMoviePlayer;
 			sourceTree = SOURCE_ROOT;
@@ -179,6 +184,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B80F0C5E1DB8974600ABBB55 /* XYAVMovieDownloadManager.m in Sources */,
 				B80EE3921DB07495002F7DAD /* ViewController.m in Sources */,
 				B81ADF5E1DB75268006B5114 /* XYAVAssetRequestTask.m in Sources */,
 				B81ADF5F1DB75268006B5114 /* XYAVAssetResourceLoader.m in Sources */,

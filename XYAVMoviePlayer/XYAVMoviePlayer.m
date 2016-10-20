@@ -13,22 +13,22 @@
 
 #import "XYAVAssetResourceLoader.h"
 #import "XYAVFileTool.h"
+#import "XYAVMovieDownloadManager.h"
 
-//#import "SUResourceLoader.h"
-
-@interface XYAVMoviePlayer () </*SULoaderDelegate*/ XYAVAssetResourceLoaderDelegate>
+@interface XYAVMoviePlayer () <XYAVAssetResourceLoaderDelegate>
 
 @property (nonatomic,strong) AVPlayerLayer *playerLayer;
 
 @property (nonatomic,assign) BOOL shouldPlay;
 
 @property (nonatomic,strong) XYAVAssetResourceLoader *resourceLoader;
-//@property (nonatomic,strong) SUResourceLoader *resourceLoader;
 
 @end
 
 @implementation XYAVMoviePlayer {
     NSTimer *durationTimer;
+    
+    int lastPlayingState;
 }
 
 #pragma mark - init
@@ -70,7 +70,8 @@
     self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     self.playerLayer.player.volume = 1;
     [self.mediaPlayerView.layer addSublayer:self.playerLayer];
-
+    
+    lastPlayingState = -1;
 }
 
 - (void)startDurationTimer {
@@ -128,7 +129,7 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerDownloadProgressChanged:)]) {
         [self.delegate player:self didPlayerDownloadProgressChanged:downloadProgress];
     }
-    NSLog(@"播放进度 %d%@ , 缓存进度 %d%@",(int)(currentTime*100/totalTime),@"%",(int)(downloadProgress*100),@"%");
+    //    NSLog(@"播放进度 %d%@ , 缓存进度 %d%@",(int)(currentTime*100/totalTime),@"%",(int)(downloadProgress*100),@"%");
     
 }
 
@@ -152,14 +153,14 @@
     }
 }
 
-static int lastPlayingState = -1;
 -(void)notifyPlayStateChanged:(BOOL)nowPlayingState{
+    //    NSLog(@"notifyPlayStateChanged %d,%d",nowPlayingState,lastPlayingState);
     if (lastPlayingState == nowPlayingState) {
         return;
     }
     lastPlayingState = nowPlayingState;
     if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
-        [self.delegate player:self didPlayerStateChanged:self.isPlaying];
+        [self.delegate player:self didPlayerStateChanged:nowPlayingState];
     }
 }
 
@@ -177,8 +178,9 @@ static int lastPlayingState = -1;
 // Pauses playback if playing.
 - (void)pause {
     [self.playerLayer.player pause];
+    lastPlayingState = 0;
     self.shouldPlay = NO;
-//    [self stopDurationTimer];
+    //    [self stopDurationTimer];
     if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerStateChanged:)]) {
         [self.delegate player:self didPlayerStateChanged:NO];
     }
@@ -187,6 +189,7 @@ static int lastPlayingState = -1;
 // Ends playback. Calling -play again will start from the beginnning of the queue.
 - (void)stop {
     [self pause];
+    lastPlayingState = -1;
     self.shouldPlay = NO;
     [self stopDurationTimer];
 }
@@ -249,36 +252,52 @@ static int lastPlayingState = -1;
                 NSString *defaultFileExtension = @"mp4";
                 NSString *cacheFileName = [[NSURL URLWithString:playURL] lastPathComponent];
                 NSString *cacheFileExtension = [[NSURL URLWithString:playURL] pathExtension];
-                if (self.delegate && [self.delegate respondsToSelector:@selector(filePathExtensionForPlayerCompleteCache:)]) {
-                    cacheFileExtension = [self.delegate filePathExtensionForPlayerCompleteCache:self];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(filePathExtensionWhenPlayerCompleteCache:)]) {
+                    cacheFileExtension = [self.delegate filePathExtensionWhenPlayerCompleteCache:self];
                 }
                 if (!cacheFileExtension || [cacheFileExtension isEqualToString:@""]) {
                     cacheFileExtension = defaultFileExtension;
                 }
-                if (self.delegate && [self.delegate respondsToSelector:@selector(fileNameForPlayerCompleteCache:)]) {
-                    cacheFileName = [self.delegate fileNameForPlayerCompleteCache:self];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(fileNameWhenPlayerCompleteCache:)]) {
+                    cacheFileName = [self.delegate fileNameWhenPlayerCompleteCache:self];
                 }else{
                     if (cacheFileName) {
                         cacheFileName = [cacheFileName stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@".%@",cacheFileExtension] withString:@""];
                     }
                 }
-                
-                NSString *cacheFilePath = [XYAVFileTool cacheFileExistsWithFileName:cacheFileName pathExtension:cacheFileExtension];
-                if (cacheFilePath) {
-                    //播放本地缓存
-                    NSURL *fileUrl = [NSURL fileURLWithPath:cacheFilePath];
-                    playerItem = [AVPlayerItem playerItemWithURL:fileUrl];
-                }else{
-                    self.resourceLoader = [[XYAVAssetResourceLoader alloc] init];
-                    self.resourceLoader.delegate = self;
-                    self.resourceLoader.acceptableMIMEType = self.currentMIMEType?self.currentMIMEType:defaultMIMEType;
-                    self.resourceLoader.cacheFileName = cacheFileName;
-                    self.resourceLoader.cacheFileExtension = cacheFileExtension;
-                    
-                    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[[NSURL URLWithString:playURL] customSchemeURL] options:nil];
-                    //        AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL URLWithString:playURL] options:nil];
-                    [asset.resourceLoader setDelegate:self.resourceLoader queue:dispatch_get_main_queue()];
+                if (!cacheFileName || [cacheFileName isEqualToString:@""]) {
+                    self.resourceLoader = nil;
+                    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL URLWithString:playURL] options:nil];
                     playerItem = [AVPlayerItem playerItemWithAsset:asset];
+                }else{
+                    BOOL isExistAtFileSystem = NO;
+                    NSString *cacheFilePath = [XYAVFileTool cacheFileExistsWithFileName:cacheFileName pathExtension:cacheFileExtension];
+                    if (cacheFilePath && ![cacheFilePath isEqualToString:@""]) {
+                        isExistAtFileSystem = YES;
+                    }else{
+                        NSString *downloadFileFullName = [NSString stringWithFormat:@"%@.%@",cacheFileName,cacheFileExtension];
+                        isExistAtFileSystem = [XYAVMovieDownloadManager downloadFileExistForName:downloadFileFullName];
+                        cacheFilePath = [XYAVMovieDownloadManager downloadItemSavingPathWithFullFileName:downloadFileFullName];
+                        if (cacheFilePath && ![cacheFilePath isEqualToString:@""]) {
+                            isExistAtFileSystem = YES;
+                        }else{
+                            isExistAtFileSystem = NO;
+                        }
+                    }
+                    if (isExistAtFileSystem) {
+                        //播放本地缓存
+                        NSURL *fileUrl = [NSURL fileURLWithPath:cacheFilePath];
+                        playerItem = [AVPlayerItem playerItemWithURL:fileUrl];
+                    }else{
+                        AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[[NSURL URLWithString:playURL] customSchemeURL] options:nil];
+                        self.resourceLoader = [[XYAVAssetResourceLoader alloc] init];
+                        self.resourceLoader.delegate = self;
+                        self.resourceLoader.acceptableMIMEType = self.currentMIMEType?self.currentMIMEType:defaultMIMEType;
+                        self.resourceLoader.cacheFileName = cacheFileName;
+                        self.resourceLoader.cacheFileExtension = cacheFileExtension;
+                        [asset.resourceLoader setDelegate:self.resourceLoader queue:dispatch_get_main_queue()];
+                        playerItem = [AVPlayerItem playerItemWithAsset:asset];
+                    }
                 }
             }else{
                 playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:playURL]];
