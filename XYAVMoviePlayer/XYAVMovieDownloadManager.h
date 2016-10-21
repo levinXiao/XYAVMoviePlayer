@@ -14,9 +14,12 @@
 @protocol XYAVMovieDownloadManagerDelegate <NSObject>
 
 @optional
--(void)managerDownloadWrittenBytes:(long long)writtenBytes expectedWrittenBytes:(long long)expectedWrittenBytes;
+-(void)managerDownloadItemWillBegin:(XYAVMovieDownloadItem *)item;
 
--(void)managerDownloadDidFinishDownloadAtLocation:(NSString *)location;
+-(void)managerDownloadForItem:(XYAVMovieDownloadItem *)item writtenBytes:(long long)writtenBytes expectedWrittenBytes:(long long)expectedWrittenBytes;
+
+-(void)managerDownloadForItem:(XYAVMovieDownloadItem *)item didFinishDownloadAtLocation:(NSString *)location;
+
 
 @end
 

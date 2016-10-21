@@ -126,8 +126,8 @@
             }
         }
     }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerDownloadProgressChanged:)]) {
-        [self.delegate player:self didPlayerDownloadProgressChanged:downloadProgress];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(player:didPlayerCacheDownloadProgressChanged:)]) {
+        [self.delegate player:self didPlayerCacheDownloadProgressChanged:downloadProgress];
     }
     //    NSLog(@"播放进度 %d%@ , 缓存进度 %d%@",(int)(currentTime*100/totalTime),@"%",(int)(downloadProgress*100),@"%");
     
@@ -277,11 +277,8 @@
                     }else{
                         NSString *downloadFileFullName = [NSString stringWithFormat:@"%@.%@",cacheFileName,cacheFileExtension];
                         isExistAtFileSystem = [XYAVMovieDownloadManager downloadFileExistForName:downloadFileFullName];
-                        cacheFilePath = [XYAVMovieDownloadManager downloadItemSavingPathWithFullFileName:downloadFileFullName];
-                        if (cacheFilePath && ![cacheFilePath isEqualToString:@""]) {
-                            isExistAtFileSystem = YES;
-                        }else{
-                            isExistAtFileSystem = NO;
+                        if (isExistAtFileSystem) {
+                            cacheFilePath = [XYAVMovieDownloadManager downloadItemSavingPathWithFullFileName:downloadFileFullName];
                         }
                     }
                     if (isExistAtFileSystem) {

@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "XYAVMoviePlayer.h"
 #import "XYAVMovieDownloadManager.h"
+#import "XYAVFileTool.h"
 
 @interface ViewController () <XYAVMoviePlayerDelegate,XYAVMovieDownloadManagerDelegate>
 
@@ -34,6 +35,9 @@
     switchButton.frame = (CGRect){0,self.view.frame.size.height-100,80,50};
     [self.view addSubview:switchButton];
     
+    [XYAVFileTool clearCache];
+    [[XYAVMovieDownloadManager sharedManager] deleteAllDownloadItems];
+    
     avMoviePlayer = [[XYAVMoviePlayer alloc] init];
     avMoviePlayer.frame = (CGRect){0,50,self.view.frame.size.width,300};
     avMoviePlayer.delegate = self;
@@ -50,6 +54,8 @@
 //        avMoviePlayer.playURL = @"http://krtv.qiniudn.com/150522nextapp";
     
     avMoviePlayer.playURL = @"http://o7b4rtbje.bkt.clouddn.com/Sia-Chandelier.mp4";
+//    http://lelink-e.ecare365.com/v1/devices/localmedia/play?device_id=144358561272047327&media_name=201610211456100060.mp4&token=peeupqetg8p1u6fkt8o6f86ql6&uuid=F3E73245-2291-4759-9206-F397165248B5
+//    avMoviePlayer.playURL = @"http://lelink-e.ecare365.com/v1/devices/localmedia/play?device_id=144358561272047327&media_name=201610211456100060.mp4&token=583a30bnsbsmpfrsvbficjklj0&uuid=F3E73245-2291-4759-9206-F397165248B5";
     [avMoviePlayer play];
     avMoviePlayer.currentVolumn = 1;
 //    
@@ -108,11 +114,16 @@ NSURLSessionDownloadTask *downloadTask;
     
 }
 
--(void)managerDownloadWrittenBytes:(long long)writtenBytes expectedWrittenBytes:(long long)expectedWrittenBytes {
+#pragma mark - XYAVMovieDownloadManagerDelegate
+-(void)managerDownloadItemWillBegin:(XYAVMovieDownloadItem *)item {
+    
+}
+
+-(void)managerDownloadForItem:(XYAVMovieDownloadItem *)item writtenBytes:(long long)writtenBytes expectedWrittenBytes:(long long)expectedWrittenBytes {
     NSLog(@"managerDownloadWrittenBytes  %lld ,%lld %02d%@",writtenBytes,expectedWrittenBytes,(int)(writtenBytes*100.f/expectedWrittenBytes),@"%");
 }
 
--(void)managerDownloadDidFinishDownloadAtLocation:(NSString *)location {
+-(void)managerDownloadForItem:(XYAVMovieDownloadItem *)item didFinishDownloadAtLocation:(NSString *)location {
     NSLog(@"location %@",location);
 }
 
@@ -137,7 +148,7 @@ NSURLSessionDownloadTask *downloadTask;
     playerGrogressSlider.value = (pass *1.f/total)*playerGrogressSlider.maximumValue;
 }
 
--(void)player:(XYAVMoviePlayer *)player didPlayerDownloadProgressChanged:(float)downloadProgress{
+-(void)player:(XYAVMoviePlayer *)player didPlayerCacheDownloadProgressChanged:(float)downloadProgress{
     playerDownloadGrogressSlider.value = downloadProgress*1.f*playerDownloadGrogressSlider.maximumValue;
 }
 

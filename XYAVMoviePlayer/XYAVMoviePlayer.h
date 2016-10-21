@@ -18,16 +18,14 @@
 - (NSString *)filePathExtensionWhenPlayerCompleteCache:(XYAVMoviePlayer *)player;
 
 //当cacheEnable = YES时触发回调
-//返回的url 是 当播放器下载了文件到自身的文件系统中 这样在播放的时候就不用去缓存文件夹去查找缓存过的文件
+//当播放器下载了文件到自身的文件系统中 这样在播放的时候就不用去缓存文件夹去查找缓存过的文件
 //而是直接去 文件系统中返回路径 直接播放本地文件
 //如果返回的是nil或者文件不存在 则走 原本逻辑 拿到filename之后去缓存文件夹查找,如果存在播放缓存文件夹的本地文件 如果不存在播放网络流
-- (NSURL *)downloadFilePathIfPlayerDownloadFile:(XYAVMoviePlayer *)player;
-
 - (void)player:(XYAVMoviePlayer *)player didPlayerStateChanged:(BOOL)isPlaying;
 
 - (void)player:(XYAVMoviePlayer *)player didPlayerTimePass:(double)pass timeTotal:(double)total;
 
-- (void)player:(XYAVMoviePlayer *)player didPlayerDownloadProgressChanged:(float)downloadProgress;
+- (void)player:(XYAVMoviePlayer *)player didPlayerCacheDownloadProgressChanged:(float)downloadProgress;
 
 - (void)didPlayerMuteStateChanged:(XYAVMoviePlayer *)player;
 

@@ -47,7 +47,7 @@ static NSMutableDictionary *downloadTaskDictionary;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminateNotification) name:UIApplicationWillTerminateNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification) name:UIApplicationWillResignActiveNotification object:nil];
-
+        
     });
     return manager;
 }
@@ -158,6 +158,9 @@ static NSMutableDictionary *downloadTaskDictionary;
             return;
         }
     }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadItemWillBegin:)]) {
+        [self.delegate managerDownloadItemWillBegin:item];
+    }
     NSString *identifier = item.identifier ? item.identifier : @"com.xiaoyu.XYAVMovieDownloadManagerIdentifier";
     NSString *fileName = item.filename;
     if (!fileName || [fileName isEqualToString:@""]) {
@@ -175,28 +178,28 @@ static NSMutableDictionary *downloadTaskDictionary;
             BOOL success = [XYAVFileTool copyFileAtPath:cachedFilePath toPath:fullFilePath];
             if (success) {
                 item.finished = YES;
-//                item.fileSaveUrl = fullFilePath;
+                //                item.fileSaveUrl = fullFilePath;
                 BOOL deleteSuccess = [XYAVFileTool removeFileAtPath:[XYAVMovieDownloadManager savePathForPartialResumeDataWithFileName:item.identifier]];
                 //            if (deleteSuccess) {
                 //                item.partialResumeDataSaveUrl = nil;
                 //            }
                 [XYAVFileTool removeFileAtPath:cachedFilePath];
-                if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadDidFinishDownloadAtLocation:)]) {
-                    [self.delegate managerDownloadDidFinishDownloadAtLocation:fullFilePath];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadForItem:didFinishDownloadAtLocation:)]) {
+                    [self.delegate managerDownloadForItem:item didFinishDownloadAtLocation:fullFilePath];
                 }
                 return;
             }
         }
         if ([[NSFileManager defaultManager] fileExistsAtPath:fullFilePath]) {
             item.finished = YES;
-//            item.fileSaveUrl = fullFilePath;
+            //            item.fileSaveUrl = fullFilePath;
             BOOL deleteSuccess = [XYAVFileTool removeFileAtPath:[XYAVMovieDownloadManager savePathForPartialResumeDataWithFileName:item.identifier]];
-//            if (deleteSuccess) {
-//                item.partialResumeDataSaveUrl = nil;
-//            }
+            //            if (deleteSuccess) {
+            //                item.partialResumeDataSaveUrl = nil;
+            //            }
             [XYAVFileTool removeFileAtPath:cachedFilePath];
-            if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadDidFinishDownloadAtLocation:)]) {
-                [self.delegate managerDownloadDidFinishDownloadAtLocation:fullFilePath];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadForItem:didFinishDownloadAtLocation:)]) {
+                [self.delegate managerDownloadForItem:item didFinishDownloadAtLocation:fullFilePath];
             }
             return;
         }
@@ -287,13 +290,13 @@ didFinishDownloadingToURL:(NSURL *)location {
     BOOL success = [XYAVFileTool copyFileAtPath:[location.absoluteString stringByReplacingOccurrencesOfString:@"file://" withString:@""] toPath:fullFilePath];
     if (success) {
         item.finished = YES;
-//        item.fileSaveUrl = fullFilePath;
+        //        item.fileSaveUrl = fullFilePath;
         BOOL deleteSuccess = [XYAVFileTool removeFileAtPath:[XYAVMovieDownloadManager savePathForPartialResumeDataWithFileName:identifier]];
-//        if (deleteSuccess) {
-//            item.partialResumeDataSaveUrl = nil;
-//        }
-        if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadDidFinishDownloadAtLocation:)]) {
-            [self.delegate managerDownloadDidFinishDownloadAtLocation:fullFilePath];
+        //        if (deleteSuccess) {
+        //            item.partialResumeDataSaveUrl = nil;
+        //        }
+        if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadForItem:didFinishDownloadAtLocation:)]) {
+            [self.delegate managerDownloadForItem:item didFinishDownloadAtLocation:fullFilePath];
         }
     }
 }
@@ -304,8 +307,8 @@ didFinishDownloadingToURL:(NSURL *)location {
     
     XYAVMovieDownloadItem *item = [allDownloadItemDictionary objectForKey:downloadTask.taskDescription];
     item.finished = NO;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadWrittenBytes:expectedWrittenBytes:)]) {
-        [self.delegate managerDownloadWrittenBytes:totalBytesWritten expectedWrittenBytes:totalBytesExpectedToWrite];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(managerDownloadForItem:writtenBytes:expectedWrittenBytes:)]) {
+        [self.delegate managerDownloadForItem:item writtenBytes:totalBytesWritten expectedWrittenBytes:totalBytesExpectedToWrite];
     }
 }
 
@@ -353,12 +356,12 @@ didFinishDownloadingToURL:(NSURL *)location {
     if (self.downloadUrl) {
         [aCoder encodeObject:self.downloadUrl forKey:NSStringFromSelector(@selector(downloadUrl))];
     }
-//    if (self.fileSaveUrl) {
-//        [aCoder encodeObject:self.fileSaveUrl forKey:NSStringFromSelector(@selector(fileSaveUrl))];
-//    }
-//    if (self.partialResumeDataSaveUrl) {
-//        [aCoder encodeObject:self.partialResumeDataSaveUrl forKey:NSStringFromSelector(@selector(partialResumeDataSaveUrl))];
-//    }
+    //    if (self.fileSaveUrl) {
+    //        [aCoder encodeObject:self.fileSaveUrl forKey:NSStringFromSelector(@selector(fileSaveUrl))];
+    //    }
+    //    if (self.partialResumeDataSaveUrl) {
+    //        [aCoder encodeObject:self.partialResumeDataSaveUrl forKey:NSStringFromSelector(@selector(partialResumeDataSaveUrl))];
+    //    }
     if (self.customData) {
         [aCoder encodeObject:self.customData forKey:NSStringFromSelector(@selector(customData))];
     }
@@ -380,9 +383,9 @@ didFinishDownloadingToURL:(NSURL *)location {
         
         self.downloadUrl = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(downloadUrl))];
         
-//        self.fileSaveUrl = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(fileSaveUrl))];
+        //        self.fileSaveUrl = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(fileSaveUrl))];
         
-//        self.partialResumeDataSaveUrl = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(partialResumeDataSaveUrl))];
+        //        self.partialResumeDataSaveUrl = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(partialResumeDataSaveUrl))];
         
         self.expectedWrittenBytes = [[aDecoder decodeObjectForKey:NSStringFromSelector(@selector(expectedWrittenBytes))] longLongValue];
         

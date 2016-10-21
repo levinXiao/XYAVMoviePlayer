@@ -113,7 +113,9 @@
 
 - (NSURL *)customSchemeURL {
     NSURLComponents * components = [[NSURLComponents alloc] initWithURL:self resolvingAgainstBaseURL:NO];
-    components.scheme = @"streaming";
+//    components.scheme = @"streaming";
+    components.scheme = @"custiom";
+    NSLog(@"%@",[components URL]);
     return [components URL];
 }
 
